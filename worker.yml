@@ -1,0 +1,5 @@
+- hosts: worker
+  become: true
+  roles:
+    - worker
+

@@ -1,0 +1,17 @@
+
+[Unit]
+Description = Apache Superset, A modern, enterprise-ready business intelligence web application
+After = network.target
+
+[Service]
+PIDFile = '{{ SUPERSET_HOME }}/superset.PIDFile'
+User = superset
+Group = superset
+Environment=SUPERSET_HOME='{{ SUPERSET_HOME }}'
+WorkingDirectory = '{{ SUPERSET_HOME }}'
+ExecStart = '/usr/local/bin/gunicorn --workers {{ GUNICORN_WORKERS }} --worker-class gevent --timeout {{ GUNICORN_TIMEOUT }}   --bind {{ GUNICORN_BIND }} --pid /home/superset/superset.PIDFile superset:app'
+ExecStop = /bin/kill -s TERM $MAINPID
+
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,74 @@
+---
+# tasks file for superset
+- name: Download and Unrachive Superset source code
+  unarchive:
+      src: "https://github.com/apache/incubator-superset/archive/{{ SUPERSET_VERSION}}.tar.gz"
+      dest: "/tmp"
+      remote_src: yes
+   
+
+
+- name: Copy databases requirements
+  copy:
+    src:  files/requirements-db.txt
+    dest: "/tmp/incubator-superset-{{ SUPERSET_VERSION }}"
+
+
+- name: Build Superset UI 
+  shell: npm ci && npm run build
+  args:
+      chdir: "/tmp/incubator-superset-{{ SUPERSET_VERSION }}/superset/assets"
+
+
+- name: Build Superset source code
+  shell: python3.7 setup.py sdist
+  args:
+      chdir: "/tmp/incubator-superset-{{ SUPERSET_VERSION }}"
+
+
+- name: Install requirements
+  pip:
+    requirements:  "{{ item }}"
+    executable: pip3.7
+    chdir:  "/tmp/incubator-superset-{{ SUPERSET_VERSION }}"
+  loop:
+    - requirements.txt
+    - requirements-db.txt
+ 
+
+- name: Install Superset
+  pip:
+    name: dist/apache-superset-{{ SUPERSET_VERSION }}.tar.gz
+    executable: pip3.7
+    chdir:  "/tmp/incubator-superset-{{ SUPERSET_VERSION }}"
+
+
+- name: Remove Superset source code
+  file:
+    path: "/tmp/incubator-superset-{{ SUPERSET_VERSION }}"
+    state: absent
+
+
+- name: Copy Superset config
+  template:
+    src:  "templates/superset_config.j2"
+    dest: "{{ SUPERSET_HOME }}/superset_config.py"
+
+
+- name: Superset ownership
+  file:
+    path: "{{ SUPERSET_HOME }}"
+    state: directory
+    recurse: yes
+    owner: superset
+    group: superset
+
+
+- name: Restart Superset 
+  systemd:
+      name: superset-webserver
+      state: restarted
+      daemon_reload: yes
+
+
+

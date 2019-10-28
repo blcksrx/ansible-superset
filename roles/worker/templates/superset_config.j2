@@ -1,0 +1,26 @@
+import os
+from werkzeug.contrib.cache import RedisCache
+
+MAPBOX_API_KEY = os.getenv('MAPBOX_API_KEY', '')
+
+CACHE_CONFIG = {
+    'CACHE_TYPE': 'redis',
+    'CACHE_DEFAULT_TIMEOUT': 300,
+    'CACHE_KEY_PREFIX': 'superset__',
+    'CACHE_REDIS_HOST': '{{ REDIS_HOST }}',
+    'CACHE_REDIS_PORT': 6379,
+    'CACHE_REDIS_DB': {{ REDIS_DB }},
+    'CACHE_REDIS_URL': 'redis://{{ REDIS_HOST }}:{{ REDIS_PORT }}/{{ REDIS_DB }}'
+}
+
+SQLALCHEMY_DATABASE_URI = '{{ DB_TYPE }}://{{ DB_USERNAME }}:{{ DB_PASSWORD }}@{{ DB_HOST }}:{{ DB_PORT}}/{{ DB_NAME }}'
+SQLALCHEMY_TRACK_MODIFICATIONS = {{ SQLALCHEMY_TRACK_MODIFICATIONS }}
+SECRET_KEY = '{{ SECRET_KEY }}'
+SQLLAB_TIMEOUT = {{ SQLLAB_TIMEOUT }}
+SUPERSET_WEBSERVER_TIMEOUT = {{ SUPERSET_WEBSERVER_TIMEOUT }}
+
+RESULTS_BACKEND = RedisCache(
+    host='{{ REDIS_HOST }}',
+    port={{ REDIS_PORT}},
+    key_prefix='superset_results__'
+)

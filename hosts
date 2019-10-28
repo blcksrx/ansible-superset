@@ -1,0 +1,43 @@
+[webserver]
+webserver1
+webserver2
+
+[worker]
+worker1
+worker2
+worker3
+worker4
+
+[superset:children]
+webservers
+workers
+
+[superset:vars]
+SUPERSET_HOME= /home/superset
+SUPERSET_VERSION= 0.34.1
+REDIS_HOST= 
+REDIS_PORT= 6379
+REDIS_DB= 
+DB_TYPE= mysql
+DB_USERNAME= 
+DB_PASSWORD= 
+DB_HOST= 
+DB_PORT= 3306
+DB_NAME= superset
+SECRET_KEY= 
+MAPBOX_API_KEY= 
+SQLALCHEMY_TRACK_MODIFICATIONS= True
+SQLLAB_TIMEOUT= 60
+SUPERSET_WEBSERVER_TIMEOUT= 60
+SUPERSET_HOME= /home/superset
+
+
+[webserver:vars]
+GUNICORN_BIND= 0.0.0.0:8000
+GUNICORN_TIMEOUT= 60
+GUNICORN_WORKERS= 4
+
+[worker:vars]
+CELERY_WORKER= 4
+CELERY_POOL= gevent
+
